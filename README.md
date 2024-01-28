@@ -1,15 +1,15 @@
 # Capstone Project: Part 1 (S28 ERA V1)
 ## Train LLM from scratch ##
 
-* You need to select a model that is less than 3B parameters (can be Microsoft's Phi 2 as well, but with random weights, hence training logs are MUST for capstone)
+* We need to select a model that is less than 3B parameters (can be Microsoft's Phi 2 as well, but with random weights, hence training logs are MUST for capstone)
 * Data:
   * It would be close to impossible to collect ALL the datasets required to train your model. Hence:
-  * You are going to use Microsoft's Phi-2 or any other model and generate data. Recommend you generate this data in parallel, don't generate and store everything as that would be a very very large dataset
-  * You are going to collect "some" clean data (100MB when zipped). This data CAN be generated from Phi-2 and stored.
+  * We are going to use Microsoft's Phi-2 or any other model and generate data. Recommendation was to generate this data in parallel, not generate and store everything as that would be a very very large dataset
+  * We are going to collect "some" clean data (100MB when zipped). This data can be generated from Phi-2 and stored.
 * Training
-  * You are going to use the same tokenizer and other data structures to keep your life simple
-  * You are going to use AWS (or an equvalent system) where you are going to train YOUR model. 
-  * You are going to train YOUR model (let's say that starts at 10). Train it somehow to reach the "initial loss - 1" value. Compare it with the final Microsoft's Phi 2's value and see how much more you have to train!!!
+  * We are going to use the same tokenizer and other data structures to keep things simple
+  * We are going to use AWS (or an equivalent system) where we are going to train the model. 
+  * We are going to train the model (let's say that starts at 10). Train it somehow to reach the "initial loss - 1" value. Compare it with the final Microsoft's Phi 2's value and see how much more we have to train!!!
 
 ### Training Logs ###
 ```
@@ -118,3 +118,60 @@ These texts are either from the stored text-files (sample.zip) or generated from
 This training notebook is run on colab to train the model. please note that \<Public URL\>/generate needs to be added as **feed_url** in
 _config.py_ file 
 
+## phi_train_clean_data
+This folder contains the notebook trained for Phi1.5 and Phi2 models for a clean data sample taken from redpajama data. The corresponding logs as follows -
+
+### Training Microsoft Phi2 GPT model from scratch
+
+#### Features:
+1. Phi2 Model - https://huggingface.co/microsoft/phi-2
+2. Trained on 4 A100 80 GB GPU Ram.
+3. Loss reduced from 11 to 4.
+4. Used 100 MB zipped clean data - wikipedia, archive and book. Sample from https://github.com/togethercomputer/RedPajama-Data
+
+### Training Logs ###
+```
+{'model_name': 'phi-2', 'name': 'phi2_gpt', 'save_interval': 1000, 'eval_interval': 1000, 'eval_iters': 100, 'log_interval': 10, 'learning_rate': 0.006, 'batch_size': 8, 'micro_batch_size': 8, 'gradient_accumulation_steps': 1, 'max_iters': 600000, 'weight_decay': 0.1, 'beta1': 0.9, 'beta2': 0.95, 'grad_clip': 1.0, 'decay_lr': True, 'warmup_iters': 2000, 'lr_decay_iters': 600000, 'min_lr': 6e-06}
+
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/4
+Initializing distributed: GLOBAL_RANK: 2, MEMBER: 3/4
+[rank: 2] Seed set to 1337
+Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/4
+[rank: 3] Seed set to 1337
+Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/4
+[rank: 1] Seed set to 1337
+
+---------------------------------------------------------------------------------------------------- 
+distributed_backend=nccl All distributed processes registered. Starting with 4 processes
+
+----------------------------------------------------------------------------------------------------
+[rank: 0] Seed set to 1337
+Loading model with {'name': 'phi-2', 'hf_config': {'org': 'microsoft', 'name': 'phi-2'}, 'block_size': 2048, 'vocab_size': 50257, 'padding_multiple': 512, 'padded_vocab_size': 51200, 'n_layer': 32, 'n_head': 32, 'n_embd': 2560, 'rotary_percentage': 0.4, 'parallel_residual': True, 'bias': True, 'lm_head_bias': True, 'n_query_groups': 32, 'shared_attention_norm': True, '_norm_class': 'LayerNorm', 'norm_eps': 1e-05, '_mlp_class': 'GptNeoxMLP', 'gelu_approximate': 'tanh', 'intermediate_size': 10240, 'rope_condense_ratio': 1, 'rope_base': 10000, 'head_size': 80, 'rope_n_elem': 32} 
+Time to instantiate model: 0.16 seconds. 
+Total parameters 2,779,683,840 
+Estimated TFLOPs: 1312.92 
+Measured TFLOPs: 1173.04 
+iter 0 step 1: loss 11.1288, LR: 0.000000, iter time: 2820.98ms (optimizer.step) 
+iter 10 step 11: loss 6.6115, LR: 0.000030, iter time: 2432.98ms (optimizer.step) 
+iter 20 step 21: loss 4.9748, LR: 0.000060, iter time: 2433.09ms (optimizer.step) 
+iter 30 step 31: loss 3.5289, LR: 0.000090, iter time: 2431.82ms (optimizer.step) 
+iter 40 step 41: loss 7.5937, LR: 0.000120, iter time: 2434.67ms (optimizer.step) 
+iter 50 step 51: loss 5.7037, LR: 0.000150, iter time: 2435.77ms (optimizer.step) 
+iter 60 step 61: loss 5.0583, LR: 0.000180, iter time: 2481.01ms (optimizer.step) 
+iter 70 step 71: loss 4.5447, LR: 0.000210, iter time: 2435.36ms (optimizer.step) 
+iter 80 step 81: loss 3.1150, LR: 0.000240, iter time: 2434.76ms (optimizer.step) 
+iter 90 step 91: loss 5.3811, LR: 0.000270, iter time: 2435.89ms (optimizer.step) 
+iter 100 step 101: loss 4.3036, LR: 0.000300, iter time: 2437.67ms (optimizer.step) 
+iter 110 step 111: loss 4.2830, LR: 0.000330, iter time: 2438.59ms (optimizer.step) 
+iter 120 step 121: loss 4.6569, LR: 0.000360, iter time: 2439.37ms (optimizer.step) 
+iter 130 step 131: loss 4.6091, LR: 0.000390, iter time: 2497.76ms (optimizer.step) 
+iter 140 step 141: loss 5.1293, LR: 0.000420, iter time: 2439.01ms (optimizer.step) 
+iter 150 step 151: loss 4.6357, LR: 0.000450, iter time: 2443.62ms (optimizer.step) 
+iter 160 step 161: loss 5.0636, LR: 0.000480, iter time: 2446.68ms (optimizer.step) 
+iter 170 step 171: loss 4.3482, LR: 0.000510, iter time: 2440.68ms (optimizer.step) 
+iter 180 step 181: loss 4.6043, LR: 0.000540, iter time: 2441.63ms (optimizer.step) 
+iter 190 step 191: loss 3.1436, LR: 0.000570, iter time: 2440.67ms (optimizer.step) 
+iter 200 step 201: loss 4.0853, LR: 0.000600, iter time: 2443.81ms (optimizer.step)
+```
+## Comparing the Training Logs - Clean data sample Vs Stream data sample ###
+The average loss while training Phi2 model for clean data sample alone at iteration 30 and step 31 is found to be 3.5289 whereas the average loss while training Phi2 model for stream data sample at the same iteration/step is found to be 6.702834. This makes it clear that training the phi2 model with clean data gives better performance. This is that proof that if we were to have more resources we will be able to train it further for better loss / performance.
